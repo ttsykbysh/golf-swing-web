@@ -69,12 +69,17 @@ function handleMotion(e) {
   const a = e.accelerationIncludingGravity;
   if (!a) return;
 
-  const mag = Math.sqrt(a.x*a.x + a.y*a.y + a.z*a.z);
+  const mag = Math.sqrt(
+    a.x * a.x +
+    a.y * a.y +
+    a.z * a.z
+  );
+
   maxAccel = Math.max(maxAccel, mag);
 }
 
 // ============================
-// 計測終了
+// 計測終了（感度調整版）
 // ============================
 function stopSensor() {
   if (!isMeasuring) return;
@@ -82,9 +87,19 @@ function stopSensor() {
   isMeasuring = false;
   window.removeEventListener("devicemotion", handleMotion);
 
-  const distance = Math.min(300, Math.max(50, (maxAccel - 10) * 12));
-  measurements.push(Math.round(distance));
+  /*
+    感度調整ポイント
+    ・重力（約9.8）を差し引く
+    ・平方根で伸びを抑制
+    ・上下限を現実的に制限
+  */
+  const adjusted = Math.max(0, maxAccel - 9.8);
+  let distance = 80 + Math.sqrt(adjusted) * 25;
 
+  // 上下限（暴れ防止）
+  distance = Math.min(260, Math.max(80, distance));
+
+  measurements.push(Math.round(distance));
   updateResults();
 }
 
@@ -109,7 +124,7 @@ function updateResults() {
 }
 
 // ============================
-// リセット処理（← 追加・明確化）
+// リセット処理
 // ============================
 function resetAll() {
   measurements = [];
@@ -124,5 +139,3 @@ function resetAll() {
 
 </body>
 </html>
-
-
