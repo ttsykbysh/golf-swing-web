@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ゴルフスイング飛距離測定</title>
+</head>
+<body>
+
+<h2>ゴルフスイング飛距離測定</h2>
+
+<button onclick="requestPermission()">スイング開始</button>
+<button onclick="stopSensor()">終了</button>
+
+<p id="result">結果がここに表示されます</p>
+
+<script>
+// ===== QRコード認証 =====
+const token = new URLSearchParams(location.search).get("token");
+if (token !== "GOLF2026EVENT") {
+  document.body.innerHTML = "無効なQRコードです";
+}
+
+// ===== センサー処理 =====
+let maxAccel = 0;
+
+function requestPermission() {
+  if (typeof DeviceMotionEvent?.requestPermission === "function") {
+    DeviceMotionEvent.requestPermission().then(res => {
+      if (res === "granted") startSensor();
+    });
+  } else {
+    startSensor();
+  }
+}
+
+function startSensor() {
+  maxAccel = 0;
+  window.addEventListener("devicemotion", handleMotion);
+}
+
+function handleMotion(e) {
+  const a = e.accelerationIncludingGravity;
+  if (!a) return;
+
+  const mag = Math.sqrt(a.x*a.x + a.y*a.y + a.z*a.z);
+  maxAccel = Math.max(maxAccel, mag);
+}
+
+function stopSensor() {
+  window.removeEventListener("devicemotion", handleMotion);
+  const distance = Math.min(300, Math.max(50, (maxAccel - 10) * 12));
+  document.getElementById("result").innerText =
+    `推定飛距離：${Math.round(distance)} ヤード`;
+}
+</script>
+
+</body>
+</html>
+
