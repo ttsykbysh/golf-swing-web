@@ -3,11 +3,51 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ゴルフスイング飛距離測定</title>
+  <title>ＩＴ・デジ戦新春ドラコン</title>
+
+  <style>
+    /* ============================
+       紅白 縦じま背景
+       ============================ */
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: sans-serif;
+      background: repeating-linear-gradient(
+        90deg,
+        #d7000f 0,
+        #d7000f 60px,
+        #ffffff 60px,
+        #ffffff 120px
+      );
+    }
+
+    /* 読みやすさ向上用 */
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 20px;
+      border-radius: 12px;
+    }
+
+    button {
+      margin: 6px 4px;
+      padding: 10px 16px;
+      font-size: 16px;
+    }
+  </style>
 </head>
 <body>
 
-<h2>ゴルフスイング飛距離測定（3回測定）</h2>
+<div class="container">
+
+<h2>ＩＴ・デジ戦新春ドラコン（3回測定）</h2>
+
+<p style="font-size:0.9em; color:#555;">
+これは、ChatGPT（無料版）を使用して、プロンプトによる指示のみで作成したものです。<br>
+Kizuna運動地域社会との絆チーム
+</p>
 
 <button onclick="requestPermission()">スイング開始</button>
 <button onclick="stopSensor()">測定終了</button>
@@ -16,6 +56,8 @@
 <hr>
 
 <div id="results">まだ測定されていません</div>
+
+</div>
 
 <script>
 // ============================
@@ -87,16 +129,9 @@ function stopSensor() {
   isMeasuring = false;
   window.removeEventListener("devicemotion", handleMotion);
 
-  /*
-    感度調整ポイント
-    ・重力（約9.8）を差し引く
-    ・平方根で伸びを抑制
-    ・上下限を現実的に制限
-  */
   const adjusted = Math.max(0, maxAccel - 9.8);
   let distance = 80 + Math.sqrt(adjusted) * 25;
 
-  // 上下限（暴れ防止）
   distance = Math.min(260, Math.max(80, distance));
 
   measurements.push(Math.round(distance));
